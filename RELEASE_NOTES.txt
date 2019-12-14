@@ -1,4 +1,4 @@
-Release Notes - Hive - Version 3.1.2
+Release Notes - Hive - Version 3.1.2.fk.1
 
 ** Sub-task
     * [HIVE-21290] - Restore historical way of handling timestamps in Parquet while keeping the new semantics at the same time
