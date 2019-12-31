@@ -921,7 +921,7 @@ public class BeeLine implements Closeable {
         setSessionHook(sessionHook);
         sessionHook.executePreHook(getOpts().getHiveConfVariables(), user, url);
       } catch (Throwable e) {
-        throw new RuntimeException(e.getMessage());
+        throw new RuntimeException(e);
       }
 
       if (!dispatch(com)) {
