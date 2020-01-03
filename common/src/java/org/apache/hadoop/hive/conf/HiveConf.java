@@ -4432,7 +4432,13 @@ public class HiveConf extends Configuration {
         "Fully Qualified class name for concerete impl to be used to enforce queues"),
     JOBNAME_ENRICHER_CLASS("jobname.enricher.class",
         "org.apache.hadoop.hive.ql.propertymodifier.NoEnrichment",
-        "Fully qualified name of class to be used to enrich job name");
+        "Fully qualified name of class to be used to enrich job name"),
+
+    /**
+     * Properties to support light query engine
+     */
+    LIGHT_QUERY_ENGINE_ENABLED("light.query.engine.enabled", false,
+                                       "Checks if light query engine is enabled");
 
     public final String varname;
     public final String altName;

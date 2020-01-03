@@ -130,6 +130,7 @@ public class BeeLine implements Closeable {
   private final BeeLineSignalHandler signalHandler;
   private final Runnable shutdownHook;
   private static final String separator = System.getProperty("line.separator");
+  private BeelineSessionHook sessionHook;
   private boolean exit = false;
   private final DatabaseConnections connections = new DatabaseConnections();
   public static final String COMMAND_PREFIX = "!";
@@ -161,6 +162,9 @@ public class BeeLine implements Closeable {
 
   public static final String BEELINE_DEFAULT_JDBC_DRIVER = "org.apache.hive.jdbc.HiveDriver";
   public static final String DEFAULT_DATABASE_NAME = "default";
+
+  private static final String BEELINE_SESSION_HOOK_CLASS_VARNAME = "beeline.session.hook.class";
+  private static final String BEELINE_SESSION_HOOK_CLASS_VARVALUE_DEFAULT = "org.apache.hive.beeline.DefaultBeelineSessionHook";
 
   private static final String SCRIPT_OUTPUT_PREFIX = ">>>";
   private static final int SCRIPT_OUTPUT_PAD_SIZE = 5;
@@ -827,6 +831,13 @@ public class BeeLine implements Closeable {
     return code;
   }
 
+  BeelineSessionHook getSessionHook() {
+    return this.sessionHook;
+  }
+
+  private void setSessionHook(BeelineSessionHook sessionHook) {
+    this.sessionHook = sessionHook;
+  }
 
   /*
    * Connects using the command line arguments. There are two
@@ -901,6 +912,18 @@ public class BeeLine implements Closeable {
         comForDebug = constructCmdUrl(url, user, driver, true);
       }
       debug(comForDebug);
+
+      String sessionHookClassName = getOpts().getHiveConfVariables()
+              .getOrDefault(BEELINE_SESSION_HOOK_CLASS_VARNAME, BEELINE_SESSION_HOOK_CLASS_VARVALUE_DEFAULT);
+      try {
+        BeelineSessionHook sessionHook =
+                (BeelineSessionHook) Class.forName(sessionHookClassName).newInstance();
+        setSessionHook(sessionHook);
+        sessionHook.executePreHook(getOpts().getHiveConfVariables(), user, url);
+      } catch (Throwable e) {
+        throw new RuntimeException(e);
+      }
+
       if (!dispatch(com)) {
         exit = true;
         return false;

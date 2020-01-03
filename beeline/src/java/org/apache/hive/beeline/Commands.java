@@ -1431,6 +1431,10 @@ public class Commands {
         int index = beeLine.getDatabaseConnections().getIndex();
         beeLine.info(beeLine.loc("closing", index, beeLine.getDatabaseConnection()));
         beeLine.getDatabaseConnection().getCurrentConnection().close();
+        beeLine.getSessionHook().executePostHook(
+                beeLine.getOpts().getHiveConfVariables(),
+                ExtractShellUtils.getLoggedInUserFromShell()
+        );
       } else {
         beeLine.info(beeLine.loc("already-closed"));
       }
