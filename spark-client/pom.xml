@@ -22,14 +22,14 @@
   <parent>
     <groupId>org.apache.hive</groupId>
     <artifactId>hive</artifactId>
-    <version>3.1.2.fk.2</version>
+    <version>3.1.2.fk.3</version>
   </parent>
 
   <groupId>org.apache.hive</groupId>
   <artifactId>hive-spark-client</artifactId>
   <packaging>jar</packaging>
   <name>Hive Spark Remote Client</name>
-  <version>3.1.2.fk.2</version>
+  <version>3.1.2.fk.3</version>
 
   <properties>
     <hive.path.to.root>..</hive.path.to.root>
@@ -201,5 +201,16 @@
       </plugin>
     </plugins>
   </build>
-
+  <distributionManagement>
+    <snapshotRepository>
+      <id>fk-art-snapshot</id>
+      <name>libs-snapshot</name>
+      <url>http://artifactory.fkinternal.com/artifactory/v1.0/artifacts/libs-snapshots-local</url>
+    </snapshotRepository>
+    <repository>
+      <id>fk-art-release</id>
+      <name>libs-rel</name>
+      <url>http://artifactory.fkinternal.com/artifactory/v1.0/artifacts/libs-release-local</url>
+    </repository>
+  </distributionManagement>
 </project>

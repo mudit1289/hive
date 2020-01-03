@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.apache.hive</groupId>
     <artifactId>hive</artifactId>
-    <version>3.1.2.fk.2</version>
+    <version>3.1.2.fk.3</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -96,4 +96,16 @@
       </plugin>
     </plugins>
   </build>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>fk-art-snapshot</id>
+      <name>libs-snapshot</name>
+      <url>http://artifactory.fkinternal.com/artifactory/v1.0/artifacts/libs-snapshots-local</url>
+    </snapshotRepository>
+    <repository>
+      <id>fk-art-release</id>
+      <name>libs-rel</name>
+      <url>http://artifactory.fkinternal.com/artifactory/v1.0/artifacts/libs-release-local</url>
+    </repository>
+  </distributionManagement>
 </project>
