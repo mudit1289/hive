@@ -163,8 +163,8 @@ public class BeeLine implements Closeable {
   public static final String BEELINE_DEFAULT_JDBC_DRIVER = "org.apache.hive.jdbc.HiveDriver";
   public static final String DEFAULT_DATABASE_NAME = "default";
 
-  private static final String BEELINE_SESSION_HOOK_CLASS = "beeline.session.hook.class";
-  private static final String BEELINE_DEFAULT_SESSION_HOOK_CLASS = "org.apache.hive.beeline.DefaultBeelineSessionHook";
+  private static final String BEELINE_SESSION_HOOK_CLASS_VARNAME = "beeline.session.hook.class";
+  private static final String BEELINE_SESSION_HOOK_CLASS_VARVALUE_DEFAULT = "org.apache.hive.beeline.DefaultBeelineSessionHook";
 
   private static final String SCRIPT_OUTPUT_PREFIX = ">>>";
   private static final int SCRIPT_OUTPUT_PAD_SIZE = 5;
@@ -914,7 +914,7 @@ public class BeeLine implements Closeable {
       debug(comForDebug);
 
       String sessionHookClassName = getOpts().getHiveConfVariables()
-              .getOrDefault(BEELINE_SESSION_HOOK_CLASS, BEELINE_DEFAULT_SESSION_HOOK_CLASS);
+              .getOrDefault(BEELINE_SESSION_HOOK_CLASS_VARNAME, BEELINE_SESSION_HOOK_CLASS_VARVALUE_DEFAULT);
       try {
         BeelineSessionHook sessionHook =
                 (BeelineSessionHook) Class.forName(sessionHookClassName).newInstance();
