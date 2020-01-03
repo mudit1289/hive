@@ -4438,9 +4438,7 @@ public class HiveConf extends Configuration {
      * Properties to support light query engine
      */
     LIGHT_QUERY_ENGINE_ENABLED("light.query.engine.enabled", false,
-                                       "Checks if light query engine is enabled"),
-    LIGHT_QUERY_ENGINE_QUEUE("light.query.engine.queue", "default_queue",
-                                     "dedicated queue for light query engine");
+                                       "Checks if light query engine is enabled");
 
     public final String varname;
     public final String altName;
