@@ -1422,6 +1422,12 @@ public class Commands {
    * Close the current connection.
    */
   public boolean close(String line) {
+    if (null != beeLine.getSessionHook()) {
+      beeLine.getSessionHook().executePostHook(
+              beeLine.getOpts().getHiveConfVariables(),
+              ExtractShellUtils.getLoggedInUserFromShell()
+      );
+    }
     if (beeLine.getDatabaseConnection() == null) {
       return false;
     }
@@ -1431,10 +1437,6 @@ public class Commands {
         int index = beeLine.getDatabaseConnections().getIndex();
         beeLine.info(beeLine.loc("closing", index, beeLine.getDatabaseConnection()));
         beeLine.getDatabaseConnection().getCurrentConnection().close();
-        beeLine.getSessionHook().executePostHook(
-                beeLine.getOpts().getHiveConfVariables(),
-                ExtractShellUtils.getLoggedInUserFromShell()
-        );
       } else {
         beeLine.info(beeLine.loc("already-closed"));
       }

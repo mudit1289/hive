@@ -542,6 +542,7 @@ public class BeeLine implements Closeable {
       int status = beeLine.begin(args, inputStream);
 
       if (!Boolean.getBoolean(BeeLineOpts.PROPERTY_NAME_EXIT)) {
+          beeLine.close();
           System.exit(status);
       }
     } finally {
@@ -913,7 +914,7 @@ public class BeeLine implements Closeable {
       }
       debug(comForDebug);
 
-      String sessionHookClassName = getOpts().getHiveConfVariables()
+      String sessionHookClassName = getOpts().getHiveVariables()
               .getOrDefault(BEELINE_SESSION_HOOK_CLASS_VARNAME, BEELINE_SESSION_HOOK_CLASS_VARVALUE_DEFAULT);
       try {
         BeelineSessionHook sessionHook =
