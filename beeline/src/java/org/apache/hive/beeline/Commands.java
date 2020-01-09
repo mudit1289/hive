@@ -1422,11 +1422,13 @@ public class Commands {
    * Close the current connection.
    */
   public boolean close(String line) {
-    if (null != beeLine.getSessionHook()) {
+    try {
       beeLine.getSessionHook().executePostHook(
               beeLine.getOpts().getHiveConfVariables(),
               ExtractShellUtils.getLoggedInUserFromShell()
       );
+    } catch (Exception e) {
+      beeLine.error(e);
     }
     if (beeLine.getDatabaseConnection() == null) {
       return false;
