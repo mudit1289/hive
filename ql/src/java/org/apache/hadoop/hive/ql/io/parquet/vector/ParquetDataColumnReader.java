@@ -37,6 +37,14 @@ public interface ParquetDataColumnReader {
    */
   void initFromPage(int valueCount, ByteBufferInputStream in) throws IOException;
 
+  long readSmallInt();
+
+  long readSmallInt(int id);
+
+  long readTinyInt();
+
+  long readTinyInt(int id);
+
   /**
    * @return the next Dictionary ID from the page
    */
