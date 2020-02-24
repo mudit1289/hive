@@ -191,7 +191,7 @@ public class Table implements Serializable {
     }
     // Explictly set the bucketing version
     t.getParameters().put(hive_metastoreConstants.TABLE_BUCKETING_VERSION,
-        "2");
+        "1");
     return t;
   }
 
