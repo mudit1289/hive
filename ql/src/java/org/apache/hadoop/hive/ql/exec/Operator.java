@@ -1622,7 +1622,14 @@ public abstract class Operator<T extends OperatorDesc> implements Serializable,C
   }
 
   public void setBucketingVersion(int bucketingVersion) {
-    this.bucketingVersion = bucketingVersion;
+    try {
+      if (bucketingVersion == 2){
+        throw new HiveException("INVALID-BUCKETING-VERSION-ERROR!");
+      }
+    } catch (HiveException e){
+      e.printStackTrace();
+    }
+    this.bucketingVersion = 1;
   }
 
   public int getBucketingVersion() {
