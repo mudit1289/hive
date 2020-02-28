@@ -390,7 +390,7 @@ public class OpTraitsRulesProcFactory {
       // The bucketingVersion is not relevant here as it is never used.
       // For SMB, we look at the parent tables' bucketing versions and for
       // bucket map join the big table's bucketing version is considered.
-      joinOp.setOpTraits(new OpTraits(bucketColsList, -1, bucketColsList, numReduceSinks, 2));
+      joinOp.setOpTraits(new OpTraits(bucketColsList, -1, bucketColsList, numReduceSinks, 1));
       return null;
     }
 
