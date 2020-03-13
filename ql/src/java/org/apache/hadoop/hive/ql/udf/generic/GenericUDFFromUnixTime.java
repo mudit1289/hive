@@ -107,7 +107,12 @@ public class GenericUDFFromUnixTime extends GenericUDF {
     }
 
     if (timeZone == null) {
-      timeZone = SessionState.get().getConf().getLocalTimeZone();
+      SessionState ss = SessionState.get();
+      if (ss == null){
+        timeZone = ZoneId.systemDefault();
+      } else {
+        timeZone = SessionState.get().getConf().getLocalTimeZone();
+      }
       formatter.setTimeZone(TimeZone.getTimeZone(timeZone));
     }
 
