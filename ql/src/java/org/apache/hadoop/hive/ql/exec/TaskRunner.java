@@ -21,6 +21,7 @@ package org.apache.hadoop.hive.ql.exec;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.hadoop.hive.common.LogUtils;
 import org.apache.hadoop.hive.ql.metadata.Hive;
 import org.apache.hadoop.hive.ql.session.SessionState;
 import org.slf4j.Logger;
@@ -70,9 +71,11 @@ public class TaskRunner extends Thread {
 
   @Override
   public void run() {
+    LogUtils.registerLoggingContext(tsk.conf);
     runner = Thread.currentThread();
     try {
       SessionState.start(ss);
+      LogUtils.registerLoggingContext(tsk.conf);
       runSequential();
     } finally {
       try {
@@ -82,6 +85,7 @@ public class TaskRunner extends Thread {
       } catch (Exception e) {
         LOG.warn("Exception closing Metastore connection:" + e.getMessage());
       }
+      LogUtils.unregisterLoggingContext();
       runner = null;
       result.setRunning(false);
     }
