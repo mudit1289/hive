@@ -231,7 +231,8 @@ public class TestOrcFile {
 
   @Parameters
   public static Collection<Boolean[]> data() {
-    return Arrays.asList(new Boolean[][] { {false}, {true}});
+    // Test Disabled with ZeroCopy=True until ORC-701
+    return Arrays.asList(new Boolean[][] { {false}, /* {true} */});
   }
 
   public TestOrcFile(Boolean zcr) {
@@ -319,7 +320,7 @@ public class TestOrcFile {
         + "binary,string1:string,middle:struct<list:array<struct<int1:int,"
         + "string1:string>>>,list:array<struct<int1:int,string1:string>>,"
         + "map:map<string,struct<int1:int,string1:string>>,ts:timestamp,"
-        + "decimal1:decimal(38,18)>", readerInspector.getTypeName());
+        + "decimal1:decimal(38,10)>", readerInspector.getTypeName());
     List<? extends StructField> fields = readerInspector
         .getAllStructFieldRefs();
     BooleanObjectInspector bo = (BooleanObjectInspector) readerInspector
