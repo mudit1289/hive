@@ -69,12 +69,12 @@
     <snapshotRepository>
       <id>fk-art-snapshot</id>
       <name>libs-snapshot</name>
-      <url>http://artifactory.fkinternal.com/artifactory/v1.0/artifacts/libs-snapshots-local</url>
+      <url>https://jfrog.fkinternal.com/artifactory/maven_virtual</url>
     </snapshotRepository>
     <repository>
       <id>fk-art-release</id>
       <name>libs-rel</name>
-      <url>http://artifactory.fkinternal.com/artifactory/v1.0/artifacts/libs-release-local</url>
+      <url>https://jfrog.fkinternal.com/artifactory/maven_virtual</url>
     </repository>
   </distributionManagement>
 </project>
