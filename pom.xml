@@ -217,7 +217,7 @@
 
   <repositories>
     <repository>
-      <id>fk-jfrog-snapshot</id>d>
+      <id>fk-jfrog-snapshot</id>
       <name>Flipkart-Artifactory</name>
       <url>https://jfrog.fkinternal.com/artifactory/maven_virtual</url>
     </repository>
@@ -1555,7 +1555,7 @@
 
   <distributionManagement>
     <snapshotRepository>
-      <id>fk-jfrog-snapshot</id>d>
+      <id>fk-jfrog-snapshot</id>
       <name>libs-snapshot</name>
       <url>https://jfrog.fkinternal.com/artifactory/maven_virtual</url>
     </snapshotRepository>

@@ -264,7 +264,7 @@
   </build>
   <distributionManagement>
     <snapshotRepository>
-      <id>fk-jfrog-snapshot</id>d>
+      <id>fk-jfrog-snapshot</id>
       <name>libs-snapshot</name>
       <url>https://jfrog.fkinternal.com/artifactory/maven_virtual</url>
     </snapshotRepository>
