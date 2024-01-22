@@ -180,12 +180,12 @@
   </build>
   <distributionManagement>
     <snapshotRepository>
-      <id>fk-art-snapshot</id>
+      <id>fk-jfrog-snapshot</id>
       <name>libs-snapshot</name>
       <url>https://jfrog.fkinternal.com/artifactory/maven_virtual</url>
     </snapshotRepository>
     <repository>
-      <id>fk-art-release</id>
+      <id>fk-jfrog-release</id>
       <name>libs-rel</name>
       <url>https://jfrog.fkinternal.com/artifactory/maven_virtual</url>
     </repository>
