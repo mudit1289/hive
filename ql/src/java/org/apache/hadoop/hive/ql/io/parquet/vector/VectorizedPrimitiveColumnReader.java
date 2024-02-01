@@ -391,6 +391,8 @@ public class VectorizedPrimitiveColumnReader extends BaseVectorizedColumnReader 
       if (definitionLevel >= maxDefLevel) {
         switch (descriptor.getType()) {
         case INT96:
+          c.set(rowId, dataColumn.readTimestamp().toSqlTimestamp());
+          break;
         case INT64:
           c.set(rowId, dataColumn.readTimestamp().toSqlTimestamp());
           break;
