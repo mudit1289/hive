@@ -152,12 +152,10 @@ public class HiveAlterHandler implements AlterHandler {
       String expectedValue = environmentContext != null && environmentContext.getProperties() != null ?
               environmentContext.getProperties().get(hive_metastoreConstants.EXPECTED_PARAMETER_VALUE) : null;
 
-      if (expectedKey != null) {
-        // If we have to check the expected state of the table we have to prevent nonrepeatable reads.
-        msdb.openTransaction(Constants.TX_REPEATABLE_READ);
-      } else {
-        msdb.openTransaction();
-      }
+      LOG.warn("Alter table running in default mode, not REPEATABLE_READ");
+      System.out.println("Alter table running in default mode, not REPEATABLE_READ");
+      msdb.openTransaction();
+
       // get old table
       oldt = msdb.getTable(catName, dbname, name);
       if (oldt == null) {
@@ -167,7 +165,7 @@ public class HiveAlterHandler implements AlterHandler {
 
       if (expectedKey != null && expectedValue != null
               && !expectedValue.equals(oldt.getParameters().get(expectedKey))) {
-        throw new MetaException("The table has been modified. The parameter value for key '" + expectedKey + "' is '"
+        throw new MetaException("The table has been modified in start check. The parameter value for key '" + expectedKey + "' is '"
                 + oldt.getParameters().get(expectedKey) + "'. The expected was value was '" + expectedValue + "'");
       }
 
@@ -367,6 +365,20 @@ public class HiveAlterHandler implements AlterHandler {
                   new AlterTableEvent(oldt, newt, false, true, handler),
                   environmentContext);
       }
+
+      //Pre Commit Checks
+      oldt = msdb.getTable(catName, dbname, name);
+      if (oldt == null) {
+        throw new InvalidOperationException("table " +
+                Warehouse.getCatalogQualifiedTableName(catName, dbname, name) + " doesn't exist");
+      }
+
+      if (expectedKey != null && expectedValue != null
+              && !expectedValue.equals(oldt.getParameters().get(expectedKey))) {
+        throw new MetaException("The table has been modified pre commit. The parameter value for key '" + expectedKey + "' is '"
+                + oldt.getParameters().get(expectedKey) + "'. The expected was value was '" + expectedValue + "'");
+      }
+
       // commit the changes
       success = msdb.commitTransaction();
     } catch (InvalidObjectException e) {
