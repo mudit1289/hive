@@ -86,6 +86,7 @@ import org.apache.hadoop.hive.metastore.api.WMPool;
 import org.apache.hadoop.hive.metastore.api.WMResourcePlan;
 import org.apache.hadoop.hive.metastore.api.WMTrigger;
 import org.apache.hadoop.hive.metastore.api.WMValidateResourcePlanResponse;
+import org.apache.hadoop.hive.metastore.model.MLightTable;
 import org.apache.hadoop.hive.metastore.partition.spec.PartitionSpecProxy;
 import org.apache.hadoop.hive.metastore.utils.MetaStoreUtils.ColStatsObjWithSourceInfo;
 import org.apache.hadoop.hive.metastore.utils.MetaStoreUtils.FullTableName;
@@ -274,6 +275,18 @@ public interface RawStore extends Configurable {
    * @throws MetaException something went wrong in the RDBMS
    */
   Table getTable(String catalogName, String dbName, String tableName) throws MetaException;
+
+  /**
+   * Get a table object.
+   *
+   * @param catalogName catalog the table is in.
+   * @param dbName      database the table is in.
+   * @param tableName   table name.
+   * @return table object, or null if no such table exists (wow it would be nice if we either
+   * consistently returned null or consistently threw NoSuchObjectException).
+   * @throws MetaException something went wrong in the RDBMS
+   */
+  MLightTable getMLightTable(String catalogName, String dbName, String tableName) throws MetaException;
 
   /**
    * Add a partition.

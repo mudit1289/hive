@@ -176,6 +176,7 @@ import org.apache.hadoop.hive.metastore.model.MFieldSchema;
 import org.apache.hadoop.hive.metastore.model.MFunction;
 import org.apache.hadoop.hive.metastore.model.MGlobalPrivilege;
 import org.apache.hadoop.hive.metastore.model.MISchema;
+import org.apache.hadoop.hive.metastore.model.MLightTable;
 import org.apache.hadoop.hive.metastore.model.MMasterKey;
 import org.apache.hadoop.hive.metastore.model.MMetastoreDBProperties;
 import org.apache.hadoop.hive.metastore.model.MNotificationLog;
@@ -9509,6 +9510,54 @@ public class ObjectStore implements RawStore, Configurable {
       query.execute();
       query.closeAll();
     }).run();
+  }
+
+
+  @Override
+  public MLightTable getMLightTable(String catName, String dbName, String tableName) throws MetaException {
+    String selectQuery = "select TBL_NAME as tableName, partitionKeys, cols, parameters, TBL_TYPE as tableType, location, VIEW_ORIGINAL_TEXT as viewOriginalText from (select t.TBL_ID, t.TBL_NAME, t.TBL_TYPE, t.SD_ID, t.VIEW_ORIGINAL_TEXT, s.LOCATION, JSON_OBJECTAGG(tp.PARAM_KEY, tp.PARAM_VALUE) AS parameters FROM TBLS t inner join SDS s on s.SD_ID = t.SD_ID LEFT JOIN TABLE_PARAMS tp on tp.TBL_ID = t.TBL_ID WHERE t.TBL_NAME = '{tableName}' AND t.DB_ID IN (select DB_ID FROM DBS WHERE NAME = '{dbName}' AND CTLG_NAME = '{catalogName}') group by t.TBL_ID, t.TBL_NAME, t.TBL_TYPE, t.SD_ID, t.VIEW_ORIGINAL_TEXT, s.LOCATION) a left join" +
+    "(select t.TBL_ID, JSON_ARRAYAGG(JSON_OBJECT('name', `COLUMN_NAME`, 'type', `TYPE_NAME`, 'comment', COMMENT)) as cols from (select t.*, cv2.* FROM TBLS t left join SDS s on t.SD_ID = s.SD_ID inner join COLUMNS_V2 cv2 on cv2.CD_ID = s.CD_ID WHERE t.TBL_NAME = '{tableName}' AND t.DB_ID IN (select DB_ID FROM DBS WHERE NAME = '{dbName}' AND CTLG_NAME = '{catalogName}') order by cv2.`INTEGER_IDX`) t group by t.TBL_ID, t.TBL_NAME, t.TBL_TYPE, t.SD_ID) b " +
+            "on a.TBL_ID = b.TBL_ID " +
+            "left join " +
+            "(select t.TBL_ID, JSON_ARRAYAGG(JSON_OBJECT('name', `PKEY_NAME`, 'type', `PKEY_TYPE`, 'comment', PKEY_COMMENT)) as partitionKeys from (select t.TBL_NAME, t.TBL_TYPE, t.SD_ID, pks.* FROM TBLS t inner join PARTITION_KEYS pks on pks.TBL_ID = t.TBL_ID WHERE t.TBL_NAME = '{tableName}' AND t.DB_ID IN (select DB_ID FROM DBS WHERE NAME = '{dbName}' AND CTLG_NAME = '{catalogName}') order by pks.`INTEGER_IDX`) t group by t.TBL_ID, t.TBL_NAME, t.TBL_TYPE, t.SD_ID) c " +
+            "on a.TBL_ID = c.TBL_ID";
+
+    selectQuery = selectQuery.replace("{tableName}", tableName)
+            .replace("{dbName}", dbName)
+            .replace("{catName}", catName);
+
+    String selectForUpdateQuery = sqlGenerator.addForUpdateClause(selectQuery);
+    MLightTable mLightTable = null;
+
+    try {
+      prepareQuotes();
+      Query query = pm.newQuery("javax.jdo.query.SQL", selectForUpdateQuery);
+      query.setUnique(true);
+      List<MLightTable> mLightTables = (List<MLightTable>) query.execute();
+      pm.retrieveAll(mLightTables);
+      mLightTable = mLightTables.size() > 0 ? mLightTables.get(0) : null;
+      query.closeAll();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+
+    if (mLightTable == null) {
+      return null;
+    }
+    String tableType = mLightTable.getTableType();
+    if (tableType == null) {
+      // for backwards compatibility with old metastore persistence
+      if (mLightTable.getViewOriginalText() != null) {
+        mLightTable.setTableType(TableType.VIRTUAL_VIEW.toString());
+      } else if (Boolean.parseBoolean(mLightTable.getParameters().get("EXTERNAL"))) {
+        mLightTable.setTableType(TableType.EXTERNAL_TABLE.toString());
+      } else {
+        mLightTable.setTableType(TableType.MANAGED_TABLE.toString());
+      }
+    }
+
+    mLightTable.setParameters(convertMap(mLightTable.getParameters()));
+    return mLightTable;
   }
 
   static class RetryingExecutor {

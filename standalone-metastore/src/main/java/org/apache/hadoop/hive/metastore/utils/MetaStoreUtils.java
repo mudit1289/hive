@@ -57,6 +57,7 @@ import org.apache.hadoop.hive.metastore.columnstats.aggr.ColumnStatsAggregatorFa
 import org.apache.hadoop.hive.metastore.columnstats.merge.ColumnStatsMerger;
 import org.apache.hadoop.hive.metastore.columnstats.merge.ColumnStatsMergerFactory;
 import org.apache.hadoop.hive.metastore.conf.MetastoreConf;
+import org.apache.hadoop.hive.metastore.model.MLightTable;
 import org.apache.hadoop.hive.metastore.partition.spec.PartitionSpecProxy;
 import org.apache.hadoop.hive.metastore.security.HadoopThriftAuthBridge;
 import org.apache.hadoop.security.SaslRpcServer;
@@ -554,6 +555,18 @@ public class MetaStoreUtils {
    * @return true if external
    */
   public static boolean isExternalTable(Table table) {
+    if (table == null) {
+      return false;
+    }
+    Map<String, String> params = table.getParameters();
+    if (params == null) {
+      return false;
+    }
+
+    return isExternal(params);
+  }
+
+  public static boolean isExternalTable(MLightTable table) {
     if (table == null) {
       return false;
     }
