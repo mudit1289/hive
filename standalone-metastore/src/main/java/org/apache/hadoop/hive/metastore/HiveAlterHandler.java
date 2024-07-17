@@ -154,10 +154,23 @@ public class HiveAlterHandler implements AlterHandler {
 
       if (expectedKey != null) {
         // If we have to check the expected state of the table we have to prevent nonrepeatable reads.
-        msdb.openTransaction(Constants.TX_REPEATABLE_READ);
+
+        LOG.info("Setting TXN ISOLATION to TX_READ_COMMITTED");
+        msdb.openTransaction(Constants.TX_READ_COMMITTED);
+
+        // Also, if there are some expectedKey checks, we need to take row level update locks
+        msdb.lockTblForUpdate(catName, dbname, name);
       } else {
         msdb.openTransaction();
       }
+
+//      try {
+//        LOG.info("Added 10 min sleep for testing");
+//        Thread.sleep(600000);
+//      } catch (InterruptedException e) {
+//        throw new RuntimeException(e);
+//      }
+
       // get old table
       oldt = msdb.getTable(catName, dbname, name);
       if (oldt == null) {
@@ -165,10 +178,13 @@ public class HiveAlterHandler implements AlterHandler {
             Warehouse.getCatalogQualifiedTableName(catName, dbname, name) + " doesn't exist");
       }
 
-      if (expectedKey != null && expectedValue != null
-              && !expectedValue.equals(oldt.getParameters().get(expectedKey))) {
-        throw new MetaException("The table has been modified. The parameter value for key '" + expectedKey + "' is '"
-                + oldt.getParameters().get(expectedKey) + "'. The expected was value was '" + expectedValue + "'");
+      if (expectedKey != null && expectedValue != null) {
+        if(!expectedValue.equals(oldt.getParameters().get(expectedKey))) {
+          throw new MetaException("The table has been modified. The parameter value for key '" + expectedKey + "' is '"
+                  + oldt.getParameters().get(expectedKey) + "'. The expected was value was '" + expectedValue + "'");
+        } else {
+          LOG.info("expectedValue: {}, actualValue: {}", expectedValue, oldt.getParameters().get(expectedKey));
+        }
       }
 
       if (oldt.getPartitionKeysSize() != 0) {
@@ -369,6 +385,7 @@ public class HiveAlterHandler implements AlterHandler {
       }
       // commit the changes
       success = msdb.commitTransaction();
+      LOG.info("Commit done");
     } catch (InvalidObjectException e) {
       LOG.debug("Failed to get object from Metastore ", e);
       throw new InvalidOperationException(

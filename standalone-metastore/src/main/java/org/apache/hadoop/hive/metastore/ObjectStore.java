@@ -9511,6 +9511,29 @@ public class ObjectStore implements RawStore, Configurable {
     }).run();
   }
 
+  @Override
+  public void lockTblForUpdate(String catalogName, String dbName, String tableName) throws MetaException {
+    LOG.info("Adding lock for: {}.{}.{}", catalogName, dbName, tableName);
+
+    String selectQuery = "select * from TBLS where TBL_NAME = '{tblName}' AND DB_ID IN (select DB_ID FROM DBS " +
+            "WHERE NAME = '{dbName}' AND CTLG_NAME = '{catName}')";
+    selectQuery = selectQuery.replace("{catName}", catalogName);
+    selectQuery = selectQuery.replace("{dbName}", dbName);
+    selectQuery = selectQuery.replace("{tblName}", tableName);
+    String selectForUpdateQuery = sqlGenerator.addForUpdateClause(selectQuery);
+
+    new RetryingExecutor(conf, () -> {
+      prepareQuotes();
+      Query query = pm.newQuery("javax.jdo.query.SQL", selectForUpdateQuery);
+      query.setUnique(true);
+      // only need to execute it to get db Lock
+      LOG.info("Running query: {}", selectForUpdateQuery);
+      query.execute();
+      query.closeAll();
+      LOG.info("Closing query: {}", selectForUpdateQuery);
+    }).run();
+  }
+
   static class RetryingExecutor {
     interface Command {
       void process() throws Exception;

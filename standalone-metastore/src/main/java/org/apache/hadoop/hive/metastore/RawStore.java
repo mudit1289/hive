@@ -276,6 +276,16 @@ public interface RawStore extends Configurable {
   Table getTable(String catalogName, String dbName, String tableName) throws MetaException;
 
   /**
+   * Locks a table for updates.
+   * @param catalogName catalog the table is in.
+   * @param dbName database the table is in.
+   * @param tableName table name.
+   * Runs a select for update query at MySQL Layer to lock table for updates
+   * @throws MetaException something went wrong in the RDBMS
+   */
+  void lockTblForUpdate(String catalogName, String dbName, String tableName) throws MetaException;
+
+  /**
    * Add a partition.
    * @param part partition to add
    * @return true if the partition was successfully added.

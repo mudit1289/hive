@@ -901,6 +901,11 @@ public class CachedStore implements RawStore, Configurable {
   }
 
   @Override
+  public void lockTblForUpdate(String catalogName, String dbName, String tableName) throws MetaException {
+    return;
+  }
+
+  @Override
   public boolean addPartition(Partition part) throws InvalidObjectException, MetaException {
     boolean succ = rawStore.addPartition(part);
     if (succ) {
